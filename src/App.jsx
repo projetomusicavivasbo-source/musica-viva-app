@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
-import { db } from './firebase';
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
+import React, { useState, useEffect } from 'react';
+import { db } from './firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import './index.css';
 
 // Estilo dos botões de navegação
@@ -18,6 +18,7 @@ const navBtnStyle = (ativo) => ({
 function App() {
   const [aulaAtual, setAulaAtual] = useState(1);
 
+  // 1. Função para o botão de "Concluir Aula" (MANTÉM ESTA)
   const registrarAcesso = async (nomeAula) => {
     try {
       await addDoc(collection(db, "stats_musica_viva"), {
@@ -30,6 +31,25 @@ function App() {
       console.error("Erro ao salvar: ", e);
     }
   };
+
+  // 2. Função para o Acesso Geral (ADICIONA ESTA LOGO ABAIXO)
+  useEffect(() => {
+    const registrarAcessoGeral = async () => {
+      try {
+        await addDoc(collection(db, "estatisticas_gerais"), {
+          projeto: "Musica Viva",
+          data: serverTimestamp(), // Use o serverTimestamp() para manter o padrão
+          plataforma: "Web App",
+          origem: "Acesso Inicial"
+        });
+      } catch (error) {
+        console.error("Erro ao registrar acesso inicial:", error);
+      }
+    };
+    registrarAcessoGeral();
+  }, []); // O [] garante que só rode ao abrir o portal
+
+  // ... restante do código (return, menus, aulas...)
 
   return (
     <div className="container" style={{ padding: '20px', maxWidth: '800px', margin: 'auto', color: '#fff' }}>
